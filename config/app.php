@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Tenant
+    |--------------------------------------------------------------------------
+    |
+    | This 'tenant' uses the basic core functionality
+    |
+    | Type string
+    |
+    */
+    'default_tenant' => env('DEFAULT_TENANT', 'AcMe'),
 ];

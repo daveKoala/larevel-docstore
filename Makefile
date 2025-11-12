@@ -1,4 +1,4 @@
-.PHONY: help up down restart bash cache-clear migrate migrate-fresh migrate-seed composer-install test logs tinker key-generate ps build clean
+.PHONY: help up down restart bash cache-clear migrate migrate-fresh migrate-seed composer-install test watch logs tinker key-generate ps build clean
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -47,6 +47,9 @@ composer-update: ## Update composer dependencies
 
 test: ## Run PHPUnit tests
 	docker-compose exec app php artisan test
+
+watch: ## Watch and rerun tests on file changes (Usage: make watch FILE=tests/Unit/Services/TenantResolverTest.php)
+	docker-compose exec app vendor/bin/phpunit-watcher watch $(if $(FILTER),--filter=$(FILTER)) $(if $(FILE),$(FILE))
 
 tinker: ## Open Laravel tinker
 	docker-compose exec app php artisan tinker
