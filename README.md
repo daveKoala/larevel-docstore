@@ -123,6 +123,14 @@ make help            # Show all available commands
 ```
 .
 ├── app/                    # Laravel application code
+│   ├── Contracts/          # Service interfaces
+│   ├── Customers/          # Tenant-specific implementations
+│   │   └── WayneEnt/       # WayneEnt tenant customizations
+│   ├── Http/
+│   │   ├── Controllers/    # Request handlers
+│   │   └── Middleware/     # HTTP middleware (including tenant resolution)
+│   ├── Services/           # Business logic services
+│   └── Tenancy/            # Tenant resolution and management
 ├── bootstrap/              # Laravel bootstrap files
 ├── config/                 # Configuration files
 ├── database/               # Migrations, seeders, factories
@@ -139,8 +147,53 @@ make help            # Show all available commands
 ├── docker-compose.yml      # Docker services configuration
 ├── Dockerfile              # PHP application container
 ├── Makefile                # Development shortcuts
+├── TENANT_ARCHITECTURE.md  # Tenant system documentation
 └── .env                    # Environment configuration
 ```
+
+## Multi-Tenant Architecture
+
+This application implements a **tenant-based service customization** pattern that allows different customers to have slightly different implementations of the same functionality without cluttering the codebase with conditional logic.
+
+### Key Features
+
+- **Interface-based design**: Services are defined by contracts
+- **Runtime service binding**: Tenant-specific implementations are swapped at request time
+- **Clean separation**: Customer code isolated in `app/Customers/{TenantId}/`
+- **Flexible resolution**: Tenants detected via headers, subdomains, or configuration
+
+### Quick Example
+
+```bash
+# Default health check
+curl http://localhost:8000/api/status
+
+# WayneEnt-specific health check (custom implementation)
+curl -H "X-Tenant-Id: WayneEnt" http://localhost:8000/api/status
+```
+
+### Current Tenants
+
+- **AcMe**: Uses default implementations
+- **Beta**: Uses default implementations
+- **WayneEnt**: Custom health service with bat signal monitoring
+
+### Documentation
+
+For complete documentation on the tenant architecture, including:
+- How it works
+- Adding new tenants
+- Creating tenant-specific services
+- Testing strategies
+
+See **[TENANT_ARCHITECTURE.md](TENANT_ARCHITECTURE.md)**
+
+### Adding a New Tenant
+
+1. Add tenant to valid list in `app/Tenancy/TenantResolver.php`
+2. Create directory: `app/Customers/{NewTenant}/`
+3. Implement custom services (optional)
+4. Test with: `curl -H "X-Tenant-Id: NewTenant" http://localhost:8000/api/status`
 
 ## Frontend Development
 

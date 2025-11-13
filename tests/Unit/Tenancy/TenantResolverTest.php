@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Tests\Unit\Tenancy;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use App\Services\TenantResolver;
+use App\Tenancy\TenantResolver;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Tests\TestCase;

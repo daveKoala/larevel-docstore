@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Tenancy;
 
 use App\Exceptions\NoTenantException;
 use Illuminate\Http\Request;
@@ -71,6 +71,17 @@ class TenantResolver
 
     private function fromAuthenticatedUser()
     {
+        // Get authenticated user's first organization
+        $user = $this->request->user();
+
+        if ($user && $user->organizations()->exists()) {
+            $firstOrg = $user->organizations()->first();
+
+            if ($this->isValidTenant($firstOrg->slug)) {
+                return $firstOrg->slug;
+            }
+        }
+
         return null;
     }
 

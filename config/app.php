@@ -134,4 +134,15 @@ return [
     |
     */
     'default_tenant' => env('DEFAULT_TENANT', 'AcMe'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination Per Page
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the default number of items per page for
+    | paginated API responses.
+    |
+    */
+    'pagination_per_page' => env('PAGINATION_PER_PAGE', 10),
 ];

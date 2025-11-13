@@ -1,62 +1,48 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HealthController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
-Route::get('/status', function () {
-    $status = [
-        'app' => [
-            'name' => config('app.name'),
-            'env' => config('app.env'),
-            'debug' => config('app.debug'),
-            'status' => 'running',
-        ],
-        'server' => [
-            'time' => now()->toDateTimeString(),
-            'timezone' => config('app.timezone'),
-            'timestamp' => now()->timestamp,
-        ],
-        'cache' => [
-            'driver' => config('cache.default'),
-            'status' => 'unknown',
-        ],
-        'database' => [
-            'connection' => config('database.default'),
-            'status' => 'unknown',
-        ],
-    ];
+// Authentication routes
+Route::post('/register', [AuthController::class, 'register'])
+    ->middleware(\App\Http\Middleware\ResolveTenantServices::class);
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware(\App\Http\Middleware\ResolveTenantServices::class);
 
-    // Test cache connection
-    try {
-        $testKey = 'status_check_' . time();
-        Cache::put($testKey, 'test', 5);
-        $retrieved = Cache::get($testKey);
-        Cache::forget($testKey);
-
-        $status['cache']['status'] = ($retrieved === 'test') ? 'connected' : 'error';
-    } catch (\Exception $e) {
-        $status['cache']['status'] = 'error';
-        $status['cache']['message'] = $e->getMessage();
-    }
-
-    // Test database connection
-    try {
-        DB::connection()->getPdo();
-        $status['database']['status'] = 'connected';
-        $status['database']['name'] = DB::connection()->getDatabaseName();
-    } catch (\Exception $e) {
-        $status['database']['status'] = 'error';
-        $status['database']['message'] = $e->getMessage();
-    }
-
-    return response()->json($status);
+// Protected authentication routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout-all', [AuthController::class, 'logoutAll']);
+    Route::get('/tokens', [AuthController::class, 'tokens']);
 });
+
+Route::get('/status', [HealthController::class, 'status'])
+    ->middleware(\App\Http\Middleware\ResolveTenantServices::class);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// Protected routes - Projects and Orders
+Route::middleware('auth:sanctum')->group(function () {
+    // Project routes
+    Route::get('/projects', [ProjectController::class, 'index']);
+
+    // Order routes - Apply tenant service resolution for customization
+    Route::middleware(\App\Http\Middleware\ResolveTenantServices::class)->group(function () {
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::post('/orders', [OrderController::class, 'store']);
+        Route::get('/orders/{guid}', [OrderController::class, 'show']);
+        Route::put('/orders/{guid}', [OrderController::class, 'update']);
+        Route::delete('/orders/{guid}', [OrderController::class, 'destroy']);
+    });
+});
 
 // Cache test endpoints
 Route::post('/cache/write', function (Request $request) {
