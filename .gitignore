@@ -25,3 +25,5 @@ yarn-error.log
 /test-results
 
 public/.DS_Store
+public/images/.DS_Store
+.DS_Store
