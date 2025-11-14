@@ -6,10 +6,14 @@
 @section('content')
 <div class="max-w-2xl">
     <div class="mb-6 p-4 bg-yellow-50 rounded-md">
-        <h3 class="text-sm font-medium text-yellow-800 mb-2">Using EmailService (Concrete Class)</h3>
-        <p class="text-sm text-yellow-700">
-            This form uses <code class="bg-yellow-100 px-1 rounded">EmailService</code> directly (NO interface, NO registration needed).
+        <h3 class="text-sm font-medium text-yellow-800 mb-2">Using EmailService with Mailable</h3>
+        <p class="text-sm text-yellow-700 mb-2">
+            This form uses <code class="bg-yellow-100 px-1 rounded">EmailService</code> (concrete class - NO interface, NO registration needed).
             Laravel auto-resolves it via dependency injection.
+        </p>
+        <p class="text-sm text-yellow-700">
+            Emails are sent using the <code class="bg-yellow-100 px-1 rounded">UserMessage</code> Mailable with a professional Blade template
+            (<code class="bg-yellow-100 px-1 rounded">resources/views/emails/user-message.blade.php</code>).
         </p>
     </div>
 

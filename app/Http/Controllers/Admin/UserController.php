@@ -151,6 +151,7 @@ class UserController extends Controller
 
     /**
      * Send email to a user using EmailService (concrete class, auto-resolved)
+     * Uses Mailable with Blade template for professional formatting
      */
     public function sendEmail(Request $request, User $user)
     {
@@ -159,9 +160,9 @@ class UserController extends Controller
             'body' => ['required', 'string'],
         ]);
 
-        // Use EmailService directly - no interface, no registration needed!
-        $success = $this->emailService->sendTextEmail(
-            $user->email,
+        // Use EmailService with Mailable - sends formatted HTML email using Blade template
+        $success = $this->emailService->sendUserMessage(
+            $user,
             $validated['subject'],
             $validated['body']
         );

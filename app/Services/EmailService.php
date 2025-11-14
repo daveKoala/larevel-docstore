@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Mail\UserMessage;
+use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -50,6 +52,22 @@ class EmailService
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to send HTML email to {$to}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Send a formatted email to a user using Mailable with Blade template
+     */
+    public function sendUserMessage(User $user, string $subject, string $body): bool
+    {
+        try {
+            Mail::to($user->email)->send(new UserMessage($user, $subject, $body));
+
+            Log::info("User message sent to {$user->email}: {$subject}");
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to send user message to {$user->email}: " . $e->getMessage());
             return false;
         }
     }
