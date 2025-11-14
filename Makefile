@@ -1,4 +1,4 @@
-.PHONY: help up down restart bash cache-clear migrate migrate-fresh migrate-seed composer-install test watch logs tinker key-generate ps build clean tools
+.PHONY: help up down restart bash cache-clear migrate migrate-fresh migrate-seed composer-install test watch logs tinker key-generate ps build clean tools queue-work queue-listen queue-restart queue-status queue-failed queue-retry queue-flush
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -50,6 +50,27 @@ test: ## Run PHPUnit tests
 
 watch: ## Watch and rerun tests on file changes (Usage: make watch FILE=tests/Unit/Services/TenantResolverTest.php)
 	docker-compose exec app vendor/bin/phpunit-watcher watch $(if $(FILTER),--filter=$(FILTER)) $(if $(FILE),$(FILE))
+
+queue-work: ## Run queue worker (processes jobs once)
+	docker-compose exec app php artisan queue:work --queue=emails --tries=3 --timeout=60
+
+queue-listen: ## Listen to queue and process jobs continuously
+	docker-compose exec app php artisan queue:listen --queue=emails --tries=3 --timeout=60
+
+queue-restart: ## Restart all queue workers
+	docker-compose exec app php artisan queue:restart
+
+queue-status: ## Show queue status (pending jobs count)
+	@docker-compose exec app php artisan tinker --execute="echo 'Pending jobs: ' . DB::table('jobs')->count() . PHP_EOL; echo 'Failed jobs: ' . DB::table('failed_jobs')->count();"
+
+queue-failed: ## List failed queue jobs
+	docker-compose exec app php artisan queue:failed
+
+queue-retry: ## Retry all failed queue jobs
+	docker-compose exec app php artisan queue:retry all
+
+queue-flush: ## Delete all failed queue jobs
+	docker-compose exec app php artisan queue:flush
 
 tinker: ## Open Laravel tinker
 	docker-compose exec app php artisan tinker

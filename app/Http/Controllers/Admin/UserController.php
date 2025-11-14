@@ -152,6 +152,7 @@ class UserController extends Controller
     /**
      * Send email to a user using EmailService (concrete class, auto-resolved)
      * Uses Mailable with Blade template for professional formatting
+     * Emails are queued for background processing
      */
     public function sendEmail(Request $request, User $user)
     {
@@ -160,21 +161,21 @@ class UserController extends Controller
             'body' => ['required', 'string'],
         ]);
 
-        // Use EmailService with Mailable - sends formatted HTML email using Blade template
-        $success = $this->emailService->sendUserMessage(
-            $user,
-            $validated['subject'],
-            $validated['body']
-        );
+        try {
+            // Queue email for background processing
+            $this->emailService->sendUserMessage(
+                $user,
+                $validated['subject'],
+                $validated['body']
+            );
 
-        if ($success) {
             return redirect()
-                ->route('admin.users.index')
-                ->with('success', "Email sent to {$user->name} ({$user->email})");
+                ->route('admin.users.email', $user)
+                ->with('success', "Email queued for {$user->name} ({$user->email})");
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.users.email', $user)
+                ->with('error', 'Failed to queue email. Check logs for details.');
         }
-
-        return redirect()
-            ->route('admin.users.index')
-            ->with('error', 'Failed to send email. Check logs for details.');
     }
 }

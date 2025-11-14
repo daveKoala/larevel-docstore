@@ -18,6 +18,16 @@ class UserMessage extends Mailable
     public array $tenantConfig;
 
     /**
+     * The number of times the job may be attempted.
+     */
+    public $tries = 3;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     */
+    public $timeout = 120;
+
+    /**
      * Create a new message instance.
      */
     public function __construct(
@@ -32,6 +42,9 @@ class UserMessage extends Mailable
         // Get tenant from recipient user's organization (not current request context)
         $tenant = $this->getRecipientTenant();
         $this->tenantConfig = $this->configService->getConfig($tenant);
+
+        // Set queue name for this job
+        $this->onQueue('emails');
     }
 
     /**
