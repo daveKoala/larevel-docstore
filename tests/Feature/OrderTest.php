@@ -23,6 +23,7 @@ class OrderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withHeader('X-Tenant-Id', 'Beta');
 
         // Create organizations
         $this->organization = Organization::create([

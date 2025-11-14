@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Contracts\NotificationServiceInterface;
 use App\Contracts\OrderServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -11,7 +12,8 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     public function __construct(
-        private OrderServiceInterface $orderService
+        private OrderServiceInterface $orderService,
+        private NotificationServiceInterface $notificationService
     ) {
     }
     /**
@@ -56,11 +58,14 @@ class OrderController extends Controller
         ]);
 
         // Use service to create order (tenant-specific logic applied here)
-        $this->orderService->createOrder(
+        $order = $this->orderService->createOrder(
             $user,
             $validated['project_id'],
             $validated['details']
         );
+
+        // Send notification (tenant-specific notification logic applied here)
+        $this->notificationService->notifyOrderCreated($order);
 
         return redirect()
             ->route('dashboard.orders.index')
@@ -121,11 +126,14 @@ class OrderController extends Controller
         ]);
 
         // Use service to update order (tenant-specific logic applied here)
-        $this->orderService->updateOrder(
+        $order = $this->orderService->updateOrder(
             $order,
             $validated['project_id'],
             $validated['details']
         );
+
+        // Send notification (tenant-specific notification logic applied here)
+        $this->notificationService->notifyOrderUpdated($order);
 
         return redirect()
             ->route('dashboard.orders.index')

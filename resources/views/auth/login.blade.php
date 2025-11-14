@@ -61,13 +61,34 @@
                     </button>
                 </div>
 
-                <div class="text-xs text-gray-500 text-center mt-4">
-                    <p>Test Credentials:</p>
-                    <p class="mt-1">Super Admin: admin@system.com</p>
-                    <p>Tenant Admin: wile@acme.com</p>
-                    <p class="mt-1 text-gray-400">Password: password (for all)</p>
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <p class="text-xs text-gray-500 text-center mb-3">Quick Login (Testing Only):</p>
+                    <div class="space-y-2">
+                        <button type="button" onclick="fillLogin('admin@system.com', 'password')"
+                                class="w-full px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            Login as Super Admin
+                        </button>
+                        <button type="button" onclick="fillLogin('wile@acme.com', 'password')"
+                                class="w-full px-3 py-2 text-xs font-medium text-gray-700 bg-orange-50 border border-orange-300 rounded-md hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                            Login as AcMe Tenant (wile@acme.com)
+                        </button>
+                        <button type="button" onclick="fillLogin('admin@beta.com', 'password')"
+                                class="w-full px-3 py-2 text-xs font-medium text-gray-700 bg-blue-50 border border-blue-300 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Login as Beta Tenant (admin@beta.com)
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 text-center mt-3">Click button to auto-fill credentials</p>
                 </div>
             </form>
+
+            <script>
+                function fillLogin(email, password) {
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                    // Optional: Focus on submit button for immediate submission
+                    document.querySelector('button[type="submit"]').focus();
+                }
+            </script>
         </div>
     </div>
 </body>

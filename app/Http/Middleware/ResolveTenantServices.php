@@ -40,6 +40,7 @@ class ResolveTenantServices
         // Check and bind each service
         $bindings = [
             \App\Contracts\HealthServiceInterface::class => "{$namespace}\\HealthService",
+            \App\Contracts\NotificationServiceInterface::class => "{$namespace}\\NotificationService",
             \App\Contracts\OrderServiceInterface::class => "{$namespace}\\OrderService",
             // \App\Contracts\PricingService::class => "{$namespace}\\PricingService",
         ];

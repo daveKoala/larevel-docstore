@@ -27,6 +27,8 @@ Route::middleware(['auth', 'super_admin'])->prefix('admin')->name('admin.')->gro
 
     // Users
     Route::resource('users', Admin\UserController::class);
+    Route::get('users/{user}/email', [Admin\UserController::class, 'showEmailForm'])->name('users.email');
+    Route::post('users/{user}/email', [Admin\UserController::class, 'sendEmail'])->name('users.email.send');
 
     // Orders (view only)
     Route::get('orders', [Admin\OrderController::class, 'index'])->name('orders.index');

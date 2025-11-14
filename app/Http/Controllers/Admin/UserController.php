@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private EmailService $emailService
+    ) {}
+
     /**
      * Display a listing of the users.
      */
@@ -134,5 +139,41 @@ class UserController extends Controller
         return redirect()
             ->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    /**
+     * Show email form for a specific user
+     */
+    public function showEmailForm(User $user)
+    {
+        return view('admin.users.email', compact('user'));
+    }
+
+    /**
+     * Send email to a user using EmailService (concrete class, auto-resolved)
+     */
+    public function sendEmail(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'subject' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string'],
+        ]);
+
+        // Use EmailService directly - no interface, no registration needed!
+        $success = $this->emailService->sendTextEmail(
+            $user->email,
+            $validated['subject'],
+            $validated['body']
+        );
+
+        if ($success) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('success', "Email sent to {$user->name} ({$user->email})");
+        }
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('error', 'Failed to send email. Check logs for details.');
     }
 }
