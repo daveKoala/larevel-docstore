@@ -18,7 +18,7 @@ class UserMessage extends Mailable
      */
     public function __construct(
         public User $user,
-        public string $subject,
+        public string $emailSubject,
         public string $messageBody
     ) {}
 
@@ -28,7 +28,7 @@ class UserMessage extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->subject,
+            subject: $this->emailSubject,
         );
     }
 

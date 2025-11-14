@@ -1,4 +1,4 @@
-.PHONY: help up down restart bash cache-clear migrate migrate-fresh migrate-seed composer-install test watch logs tinker key-generate ps build clean mailpit
+.PHONY: help up down restart bash cache-clear migrate migrate-fresh migrate-seed composer-install test watch logs tinker key-generate ps build clean tools
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -79,6 +79,8 @@ clean: ## Remove all containers, volumes, and images
 db-bash: ## Open MySQL shell
 	docker-compose exec db mysql -u${DB_USERNAME:-laravel} -p${DB_PASSWORD:-secret} ${DB_DATABASE:-laravel}
 
-mailpit: ## Open MailPit web interface in browser
+tools: ## Open MailPit web interface in browser
 	@echo "Opening MailPit at http://localhost:8026"
 	@open http://localhost:8026
+	@echo "Opening login page"
+	@open http://localhost:8001
